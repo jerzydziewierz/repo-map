@@ -25,7 +25,7 @@ from tree_sitter_languages import get_language, get_parser
 Tag = namedtuple("Tag", "rel_fname fname line name kind".split())
 
 # Version of the tool
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 class RepoMap:
     CACHE_VERSION = 3
