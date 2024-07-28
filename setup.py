@@ -12,7 +12,7 @@ setup(
         'pygments',
         'tqdm',
         'tiktoken',
-        'tree_sitter_languages',
+        'tree_sitter_languages==1.7.0',
         'pathspec',
     ],
     entry_points={
