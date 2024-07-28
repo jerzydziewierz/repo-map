@@ -175,6 +175,8 @@ class RepoMap:
                 if tag.kind == "ref":
                     references[tag.name].append(rel_fname)
 
+        self.stats['function_count'] = sum(len(defs) for defs in definitions.values())
+
         if not references:
             references = dict((k, list(v)) for k, v in defines.items())
 
@@ -307,6 +309,7 @@ class RepoMap:
                         fnames.append(full_path)
                     pbar.update(1)
 
+        self.stats['file_count'] = len(fnames)
         ranked_tags = self.get_ranked_tags(fnames)
         return self.to_tree(ranked_tags)
 
