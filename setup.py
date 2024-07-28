@@ -17,6 +17,11 @@ setup(
         'tree_sitter_languages==1.10.2',
         'pathspec',
     ],
+    extras_require={
+        'dev': [
+            'pytest',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'repo-map=repo_map_generator:main',
