@@ -42,7 +42,6 @@ class RepoMap:
         self.stats = {
             'file_count': 0,
             'loc_count': 0,
-            'function_count': 0,
             'total_tokens': 0
         }
 
@@ -157,7 +156,6 @@ class RepoMap:
         defines = defaultdict(set)
         references = defaultdict(list)
         definitions = defaultdict(set)
-        self.stats['function_count'] = 0  # Reset function count
 
         for fname in tqdm(fnames):
             if not Path(fname).is_file():
@@ -175,9 +173,6 @@ class RepoMap:
                     defines[tag.name].add(rel_fname)
                     key = (rel_fname, tag.name)
                     definitions[key].add(tag)
-                    # Count as function if it's a definition and likely a function name
-                    if any(keyword in tag.name.lower() for keyword in ['function', 'method', 'def', 'fn', 'func']):
-                        self.stats['function_count'] += 1
 
                 if tag.kind == "ref":
                     references[tag.name].append(rel_fname)
@@ -335,7 +330,6 @@ class RepoMap:
                     print(f"Error reading file {f}: {str(e)}")
                     # Optionally, you can choose to skip this file or handle it differently
         
-        print(f"Debug: Function count = {self.stats['function_count']}")
         return tree_output
 
 def get_scm_fname(lang):
@@ -382,7 +376,6 @@ def main():
         print("\nRepository Statistics:")
         print(f"Total files: {repo_map.stats['file_count']}")
         print(f"Total lines of code: {repo_map.stats['loc_count']}")
-        print(f"Total functions: {repo_map.stats['function_count']}")
         print(f"Total tokens needed to express entire repo: {repo_map.stats['total_tokens']}")
     finally:
         repo_map.save_tags_cache()
