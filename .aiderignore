@@ -1,0 +1,8 @@
+build
+__pycache__  
+repo_map.egg-info  
+repo_map_generator.egg-info
+.git
+
+
+
