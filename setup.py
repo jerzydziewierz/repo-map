@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='repo-map',
-    version='0.1.2',
+    version='0.0.1',
     py_modules=['repo_map_generator'],
     install_requires=[
         'networkx',

@@ -24,6 +24,9 @@ from tree_sitter_languages import get_language, get_parser
 # Define Tag namedtuple globally
 Tag = namedtuple("Tag", "rel_fname fname line name kind".split())
 
+# Version of the tool
+VERSION = "0.0.1"
+
 class RepoMap:
     CACHE_VERSION = 3
     TAGS_CACHE_DIR = f".aider.tags.cache.v{CACHE_VERSION}"
@@ -346,6 +349,7 @@ def count_tokens_with_progress(text):
     return total_tokens
 
 def main():
+    print(f"Repo Map Generator v{VERSION}")
     if len(sys.argv) == 1:
         directory = "."
     elif len(sys.argv) == 2:
