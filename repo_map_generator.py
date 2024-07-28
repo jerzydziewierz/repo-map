@@ -175,7 +175,8 @@ class RepoMap:
                     defines[tag.name].add(rel_fname)
                     key = (rel_fname, tag.name)
                     definitions[key].add(tag)
-                    if 'function' in tag.name.lower():  # Assuming function names contain 'function'
+                    # Count as function if it's a definition and likely a function name
+                    if any(keyword in tag.name.lower() for keyword in ['function', 'method', 'def', 'fn', 'func']):
                         self.stats['function_count'] += 1
 
                 if tag.kind == "ref":
@@ -334,6 +335,7 @@ class RepoMap:
                     print(f"Error reading file {f}: {str(e)}")
                     # Optionally, you can choose to skip this file or handle it differently
         
+        print(f"Debug: Function count = {self.stats['function_count']}")
         return tree_output
 
 def get_scm_fname(lang):
