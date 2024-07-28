@@ -8,6 +8,7 @@ setup(
     install_requires=[
         'networkx',
         'numpy',  # numpy is a missing dependency of networkx that prevents this repo from running standalone.
+        'scipy',  # scipy is a missing dependency of networkx that prevents this repo from running standalone.
         'diskcache',
         'grep_ast',
         'pygments',
