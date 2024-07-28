@@ -4,6 +4,7 @@ setup(
     name='repo-map',
     version='0.0.3',
     py_modules=['repo_map_generator'],
+    python_requires='>=3.10',
     install_requires=[
         'networkx',
         'diskcache',
