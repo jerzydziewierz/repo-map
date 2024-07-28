@@ -1,5 +1,6 @@
 import pytest
 from repo_map_generator import RepoMap, Tag
+import os
 
 def test_repo_map_initialization():
     repo_map = RepoMap()
@@ -9,9 +10,10 @@ def test_repo_map_initialization():
     assert repo_map.debug is False
 
 def test_get_rel_fname():
-    repo_map = RepoMap(root="/test/root")
-    assert repo_map.get_rel_fname("/test/root/file.py") == "file.py"
-    assert repo_map.get_rel_fname("/test/root/dir/file.py") == "dir/file.py"
+    test_root = os.path.join(os.getcwd(), "test_root")
+    repo_map = RepoMap(root=test_root)
+    assert repo_map.get_rel_fname(os.path.join(test_root, "file.py")) == "file.py"
+    assert repo_map.get_rel_fname(os.path.join(test_root, "dir", "file.py")) == os.path.join("dir", "file.py")
 
 def test_reset_stats():
     repo_map = RepoMap()
@@ -20,9 +22,10 @@ def test_reset_stats():
     assert repo_map.stats == {'file_count': 0, 'loc_count': 0, 'total_tokens': 0, 'tag_count': 0}
 
 def test_tag_namedtuple():
-    tag = Tag(rel_fname="file.py", fname="/test/root/file.py", line=10, name="test_function", kind="def")
+    test_root = os.path.join(os.getcwd(), "test_root")
+    tag = Tag(rel_fname="file.py", fname=os.path.join(test_root, "file.py"), line=10, name="test_function", kind="def")
     assert tag.rel_fname == "file.py"
-    assert tag.fname == "/test/root/file.py"
+    assert tag.fname == os.path.join(test_root, "file.py")
     assert tag.line == 10
     assert tag.name == "test_function"
     assert tag.kind == "def"
