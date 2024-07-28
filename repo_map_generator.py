@@ -15,6 +15,7 @@ from pygments.util import ClassNotFound
 from tqdm import tqdm
 import tiktoken
 from pathspec import PathSpec
+from tqdm.auto import tqdm as tqdm_auto
 
 # Suppress FutureWarning from tree_sitter
 warnings.simplefilter("ignore", category=FutureWarning)
@@ -313,7 +314,19 @@ def get_scm_fname(lang):
 
 def count_tokens(text):
     encoding = tiktoken.get_encoding("cl100k_base")
-    return len(encoding.encode(text))
+    tokens = encoding.encode(text)
+    return len(tokens)
+
+def count_tokens_with_progress(text):
+    encoding = tiktoken.get_encoding("cl100k_base")
+    tokens = encoding.encode(text)
+    total_tokens = len(tokens)
+    
+    with tqdm_auto(total=total_tokens, desc="Counting tokens", unit="token") as pbar:
+        for i in range(0, total_tokens, 1000):  # Update progress every 1000 tokens
+            pbar.update(min(1000, total_tokens - i))
+    
+    return total_tokens
 
 def main():
     if len(sys.argv) == 1:
@@ -329,8 +342,8 @@ def main():
         result = repo_map.generate_repo_map(directory)
         print(result)
 
-        # Calculate total tokens
-        repo_map.stats['total_tokens'] = count_tokens(result)
+        # Calculate total tokens with progress bar
+        repo_map.stats['total_tokens'] = count_tokens_with_progress(result)
 
         # Print statistics
         print("\nRepository Statistics:")
