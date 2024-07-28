@@ -7,7 +7,7 @@ setup(
     python_requires='>=3.10',
     install_requires=[
         'networkx',
-        'numpy',  # Added numpy as a dependency
+        'numpy',  # numpy is a missing dependency of networkx that prevents this repo from running standalone.
         'diskcache',
         'grep_ast',
         'pygments',
