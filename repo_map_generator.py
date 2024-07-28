@@ -321,8 +321,21 @@ class RepoMap:
         ranked_tags = self.get_ranked_tags(fnames)
         tree_output = self.to_tree(ranked_tags)
         
-        # Ensure we're not double-counting
-        self.stats['loc_count'] = sum(len(open(f, 'r').readlines()) for f in fnames)
+        # Ensure we're not double-counting and handle potential encoding errors
+        self.stats['loc_count'] = 0
+        for f in fnames:
+            try:
+                with open(f, 'r', encoding='utf-8') as file:
+                    self.stats['loc_count'] += len(file.readlines())
+            except UnicodeDecodeError:
+                try:
+                    # Try to read the file as binary and decode with 'latin-1'
+                    with open(f, 'rb') as file:
+                        content = file.read().decode('latin-1')
+                        self.stats['loc_count'] += len(content.splitlines())
+                except Exception as e:
+                    print(f"Error reading file {f}: {str(e)}")
+                    # Optionally, you can choose to skip this file or handle it differently
         
         return tree_output
 
