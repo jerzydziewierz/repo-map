@@ -42,7 +42,8 @@ class RepoMap:
         self.stats = {
             'file_count': 0,
             'loc_count': 0,
-            'total_tokens': 0
+            'total_tokens': 0,
+            'tag_count': 0
         }
 
     def load_tags_cache(self):
@@ -156,6 +157,7 @@ class RepoMap:
         defines = defaultdict(set)
         references = defaultdict(list)
         definitions = defaultdict(set)
+        tag_count = 0
 
         for fname in tqdm(fnames):
             if not Path(fname).is_file():
@@ -209,7 +211,9 @@ class RepoMap:
         ranked_definitions = sorted(ranked_definitions.items(), reverse=True, key=lambda x: x[1])
 
         for (fname, ident), rank in ranked_definitions:
-            ranked_tags += list(definitions.get((fname, ident), []))
+            new_tags = list(definitions.get((fname, ident), []))
+            ranked_tags += new_tags
+            tag_count += len(new_tags)
 
         fnames_already_included = set(rt.rel_fname for rt in ranked_tags)
 
@@ -217,7 +221,9 @@ class RepoMap:
         for rank, fname in top_rank:
             if fname not in fnames_already_included:
                 ranked_tags.append(Tag(rel_fname=fname, fname='', name='', kind='', line=-1))
+                tag_count += 1
 
+        self.stats['tag_count'] = tag_count
         return ranked_tags
 
     def render_tree(self, abs_fname, rel_fname, lois):
@@ -377,6 +383,7 @@ def main():
         print(f"Total files: {repo_map.stats['file_count']}")
         print(f"Total lines of code: {repo_map.stats['loc_count']}")
         print(f"Total tokens needed to express entire repo: {repo_map.stats['total_tokens']}")
+        print(f"Total tags (leaves) in repo map: {repo_map.stats['tag_count']}")
     finally:
         repo_map.save_tags_cache()
 
