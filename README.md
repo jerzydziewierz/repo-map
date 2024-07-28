@@ -52,9 +52,9 @@ Please make sure to update tests as appropriate and adhere to the existing codin
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is [licensed](LICENSE).
 
 ## Acknowledgments
 
-- Thanks to all contributors who have helped shape Repo Map Generator
-- Inspired by various code analysis and visualization tools in the open-source community
+- inspired by https://github.com/paul-gauthier/aider
+
