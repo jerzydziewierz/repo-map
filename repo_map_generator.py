@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 from pathlib import Path
 from collections import defaultdict, namedtuple
 import warnings
@@ -31,10 +32,11 @@ class RepoMap:
     CACHE_VERSION = 3
     TAGS_CACHE_DIR = f".aider.tags.cache.v{CACHE_VERSION}"
 
-    def __init__(self, root=None, map_tokens=1024, verbose=False):
+    def __init__(self, root=None, map_tokens=1024, verbose=False, debug=False):
         self.root = root or os.getcwd()
         self.max_map_tokens = map_tokens
         self.verbose = verbose
+        self.debug = debug
         self.load_tags_cache()
         self.reset_stats()
 
@@ -77,33 +79,44 @@ class RepoMap:
         return data
 
     def get_tags_raw(self, fname, rel_fname):
-        print(f"Debug: Processing file {fname}")
+        if self.debug:
+            print(f"Debug: Processing file {fname}")
         lang = filename_to_lang(fname)
-        print(f"Debug: Detected language: {lang}")
+        if self.debug:
+            print(f"Debug: Detected language: {lang}")
         if not lang:
-            print("Debug: No language detected, returning")
+            if self.debug:
+                print("Debug: No language detected, returning")
             return
 
         try:
-            print(f"Debug: Attempting to get language for {lang}")
+            if self.debug:
+                print(f"Debug: Attempting to get language for {lang}")
             language = get_language(lang)
-            print(f"Debug: Successfully got language for {lang}")
+            if self.debug:
+                print(f"Debug: Successfully got language for {lang}")
         except Exception as e:
-            print(f"Debug: Error getting language for {lang}: {str(e)}")
+            if self.debug:
+                print(f"Debug: Error getting language for {lang}: {str(e)}")
             return
 
         try:
-            print(f"Debug: Attempting to get parser for {lang}")
+            if self.debug:
+                print(f"Debug: Attempting to get parser for {lang}")
             parser = get_parser(lang)
-            print(f"Debug: Successfully got parser for {lang}")
+            if self.debug:
+                print(f"Debug: Successfully got parser for {lang}")
         except Exception as e:
-            print(f"Debug: Error getting parser for {lang}: {str(e)}")
+            if self.debug:
+                print(f"Debug: Error getting parser for {lang}: {str(e)}")
             return
 
         query_scm = get_scm_fname(lang)
-        print(f"Debug: Query SCM file path: {query_scm}")
+        if self.debug:
+            print(f"Debug: Query SCM file path: {query_scm}")
         if not query_scm.exists():
-            print("Debug: Query SCM file does not exist, returning")
+            if self.debug:
+                print("Debug: Query SCM file does not exist, returning")
             return
         query_scm = query_scm.read_text()
 
@@ -111,12 +124,14 @@ class RepoMap:
             with open(fname, 'r', encoding='utf-8') as f:
                 code = f.read()
         except UnicodeDecodeError:
-            print(f"Warning: File '{fname}' has encoding issues. Trying to read as binary and decode.")
+            if self.debug:
+                print(f"Warning: File '{fname}' has encoding issues. Trying to read as binary and decode.")
             try:
                 with open(fname, 'rb') as f:
                     code = f.read().decode('utf-8', errors='replace')
             except Exception as e:
-                print(f"Error reading file '{fname}': {str(e)}")
+                if self.debug:
+                    print(f"Error reading file '{fname}': {str(e)}")
                 return
 
         if not code:
@@ -380,18 +395,15 @@ def count_tokens_with_progress(text):
     return total_tokens
 
 def main():
+    parser = argparse.ArgumentParser(description=f"Repo Map Generator v{VERSION}")
+    parser.add_argument("directory", nargs="?", default=".", help="Directory to analyze (default: current directory)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    args = parser.parse_args()
+
     print(f"Repo Map Generator v{VERSION}")
-    if len(sys.argv) == 1:
-        directory = "."
-    elif len(sys.argv) == 2:
-        directory = sys.argv[1]
-    else:
-        print("Usage: python repo_map_generator.py [directory]")
-        print("If no directory is specified, the current directory will be used.")
-        sys.exit(1)
-    repo_map = RepoMap(root=directory)
+    repo_map = RepoMap(root=args.directory, debug=args.debug)
     try:
-        result = repo_map.generate_repo_map(directory)
+        result = repo_map.generate_repo_map(args.directory)
         print(result)
 
         # Calculate total tokens with progress bar
