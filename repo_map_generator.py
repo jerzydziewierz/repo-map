@@ -77,15 +77,33 @@ class RepoMap:
         return data
 
     def get_tags_raw(self, fname, rel_fname):
+        print(f"Debug: Processing file {fname}")
         lang = filename_to_lang(fname)
+        print(f"Debug: Detected language: {lang}")
         if not lang:
+            print("Debug: No language detected, returning")
             return
 
-        language = get_language(lang)
-        parser = get_parser(lang)
+        try:
+            print(f"Debug: Attempting to get language for {lang}")
+            language = get_language(lang)
+            print(f"Debug: Successfully got language for {lang}")
+        except Exception as e:
+            print(f"Debug: Error getting language for {lang}: {str(e)}")
+            return
+
+        try:
+            print(f"Debug: Attempting to get parser for {lang}")
+            parser = get_parser(lang)
+            print(f"Debug: Successfully got parser for {lang}")
+        except Exception as e:
+            print(f"Debug: Error getting parser for {lang}: {str(e)}")
+            return
 
         query_scm = get_scm_fname(lang)
+        print(f"Debug: Query SCM file path: {query_scm}")
         if not query_scm.exists():
+            print("Debug: Query SCM file does not exist, returning")
             return
         query_scm = query_scm.read_text()
 
