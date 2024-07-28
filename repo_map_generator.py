@@ -97,6 +97,8 @@ class RepoMap:
 
         if not code:
             return
+        
+        self.stats['loc_count'] += len(code.splitlines())
         tree = parser.parse(bytes(code, "utf-8"))
 
         query = language.query(query_scm)
@@ -126,7 +128,6 @@ class RepoMap:
 
         self.stats['function_count'] += function_count
         self.stats['file_count'] += 1
-        self.stats['loc_count'] += len(code.splitlines())
 
         if "ref" in saw:
             return
