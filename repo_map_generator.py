@@ -296,12 +296,16 @@ class RepoMap:
     def generate_repo_map(self, directory):
         ignore_spec = self.get_ignore_spec(directory)
         fnames = []
-        for root, _, files in os.walk(directory):
-            for file in files:
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, directory)
-                if not ignore_spec.match_file(rel_path):
-                    fnames.append(full_path)
+        total_files = sum([len(files) for _, _, files in os.walk(directory)])
+        
+        with tqdm_auto(total=total_files, desc="Scanning files", unit="file") as pbar:
+            for root, _, files in os.walk(directory):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(full_path, directory)
+                    if not ignore_spec.match_file(rel_path):
+                        fnames.append(full_path)
+                    pbar.update(1)
 
         ranked_tags = self.get_ranked_tags(fnames)
         return self.to_tree(ranked_tags)
