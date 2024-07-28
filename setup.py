@@ -7,6 +7,7 @@ setup(
     python_requires='>=3.10',
     install_requires=[
         'networkx',
+        'numpy',  # Added numpy as a dependency
         'diskcache',
         'grep_ast',
         'pygments',
