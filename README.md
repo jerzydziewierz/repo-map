@@ -15,7 +15,7 @@ Repo Map Generator is a tool that creates a structured representation of your re
 To install Repo Map Generator, run:
 
 ```
-pip install repo-map
+pip install -e .
 ```
 
 ## Usage
@@ -37,10 +37,6 @@ repo-map /path/to/your/repo
 Repo Map Generator will output:
 1. A tree-like structure of your repository
 2. Statistics about your codebase
-
-## GitHub Action
-
-This repository includes a GitHub Action that runs Repo Map Generator on every push to the main branch and every pull request. The output is saved as an artifact that you can download and review.
 
 ## Contributing
 
