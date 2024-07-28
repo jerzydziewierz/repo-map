@@ -27,9 +27,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade .
     - name: Run repo-map
-      run: repo-map .
+      run: repo-map . | tee repo_map.txt
     - name: Upload repo-map output
       uses: actions/upload-artifact@v3
       with:
         name: repo-map-output
-        path: repo_map.json
+        path: repo_map.txt
