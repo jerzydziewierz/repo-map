@@ -179,8 +179,7 @@ class RepoMap:
                 if tag.kind == "ref":
                     references[tag.name].append(rel_fname)
 
-        function_count = sum(1 for defs in definitions.values() for tag in defs if tag.kind == "def" and "function" in tag.name)
-        self.stats['function_count'] += function_count
+        # We don't need to update function_count here as it's already updated in get_tags_raw
 
         if not references:
             references = dict((k, list(v)) for k, v in defines.items())
@@ -317,7 +316,12 @@ class RepoMap:
 
         self.stats['file_count'] = len(fnames)
         ranked_tags = self.get_ranked_tags(fnames)
-        return self.to_tree(ranked_tags)
+        tree_output = self.to_tree(ranked_tags)
+        
+        # Ensure we're not double-counting
+        self.stats['loc_count'] = sum(len(open(f, 'r').readlines()) for f in fnames)
+        
+        return tree_output
 
 def get_scm_fname(lang):
     try:
