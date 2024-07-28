@@ -329,9 +329,9 @@ class RepoMap:
                     self.stats['loc_count'] += len(file.readlines())
             except UnicodeDecodeError:
                 try:
-                    # Try to read the file as binary and decode with 'latin-1'
+                    # Try to read the file as binary and decode with 'ascii', ignoring errors
                     with open(f, 'rb') as file:
-                        content = file.read().decode('latin-1')
+                        content = file.read().decode('ascii', errors='ignore')
                         self.stats['loc_count'] += len(content.splitlines())
                 except Exception as e:
                     print(f"Error reading file {f}: {str(e)}")
