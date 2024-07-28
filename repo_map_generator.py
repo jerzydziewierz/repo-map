@@ -316,11 +316,14 @@ def count_tokens(text):
     return len(encoding.encode(text))
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python repo_map_generator.py <directory>")
+    if len(sys.argv) == 1:
+        directory = "."
+    elif len(sys.argv) == 2:
+        directory = sys.argv[1]
+    else:
+        print("Usage: python repo_map_generator.py [directory]")
+        print("If no directory is specified, the current directory will be used.")
         sys.exit(1)
-
-    directory = sys.argv[1]
     repo_map = RepoMap(root=directory)
     try:
         result = repo_map.generate_repo_map(directory)
