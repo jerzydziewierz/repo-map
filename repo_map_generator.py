@@ -316,25 +316,26 @@ class RepoMap:
                         fnames.append(full_path)
                     pbar.update(1)
 
-        self.stats['file_count'] = len(fnames)
         ranked_tags = self.get_ranked_tags(fnames)
         tree_output = self.to_tree(ranked_tags)
         
-        # Ensure we're not double-counting and handle potential encoding errors
+        # Count only files that contribute to the system complexity
+        used_files = set(tag.fname for tag in ranked_tags if tag.fname)
+        self.stats['file_count'] = len(used_files)
+        
+        # Calculate LOC for used files only
         self.stats['loc_count'] = 0
-        for f in fnames:
+        for f in used_files:
             try:
                 with open(f, 'r', encoding='utf-8') as file:
                     self.stats['loc_count'] += len(file.readlines())
             except UnicodeDecodeError:
                 try:
-                    # Try to read the file as binary and decode with 'ascii', ignoring errors
                     with open(f, 'rb') as file:
                         content = file.read().decode('ascii', errors='ignore')
                         self.stats['loc_count'] += len(content.splitlines())
                 except Exception as e:
                     print(f"Error reading file {f}: {str(e)}")
-                    # Optionally, you can choose to skip this file or handle it differently
         
         return tree_output
 
