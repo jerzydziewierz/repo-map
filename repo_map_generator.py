@@ -33,6 +33,9 @@ class RepoMap:
         self.max_map_tokens = map_tokens
         self.verbose = verbose
         self.load_tags_cache()
+        self.reset_stats()
+
+    def reset_stats(self):
         self.stats = {
             'file_count': 0,
             'loc_count': 0,
@@ -176,7 +179,8 @@ class RepoMap:
                 if tag.kind == "ref":
                     references[tag.name].append(rel_fname)
 
-        self.stats['function_count'] = sum(len(defs) for defs in definitions.values())
+        function_count = sum(1 for defs in definitions.values() for tag in defs if tag.kind == "def" and "function" in tag.name)
+        self.stats['function_count'] += function_count
 
         if not references:
             references = dict((k, list(v)) for k, v in defines.items())
@@ -297,6 +301,7 @@ class RepoMap:
         return PathSpec.from_lines('gitwildmatch', ignore_patterns)
 
     def generate_repo_map(self, directory):
+        self.reset_stats()
         ignore_spec = self.get_ignore_spec(directory)
         fnames = []
         total_files = sum([len(files) for _, _, files in os.walk(directory)])
