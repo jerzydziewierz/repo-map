@@ -111,12 +111,9 @@ class RepoMap:
         captures = query.captures(tree.root_node)
 
         saw = set()
-        function_count = 0
         for node, tag in captures:
             if tag.startswith("name.definition."):
                 kind = "def"
-                if tag.startswith("name.definition.function"):
-                    function_count += 1
             elif tag.startswith("name.reference."):
                 kind = "ref"
             else:
@@ -132,7 +129,6 @@ class RepoMap:
                 line=node.start_point[0],
             )
 
-        self.stats['function_count'] += function_count
         self.stats['file_count'] += 1
 
         if "ref" in saw:
@@ -161,6 +157,7 @@ class RepoMap:
         defines = defaultdict(set)
         references = defaultdict(list)
         definitions = defaultdict(set)
+        self.stats['function_count'] = 0  # Reset function count
 
         for fname in tqdm(fnames):
             if not Path(fname).is_file():
@@ -178,11 +175,11 @@ class RepoMap:
                     defines[tag.name].add(rel_fname)
                     key = (rel_fname, tag.name)
                     definitions[key].add(tag)
+                    if 'function' in tag.name.lower():  # Assuming function names contain 'function'
+                        self.stats['function_count'] += 1
 
                 if tag.kind == "ref":
                     references[tag.name].append(rel_fname)
-
-        # We don't need to update function_count here as it's already updated in get_tags_raw
 
         if not references:
             references = dict((k, list(v)) for k, v in defines.items())
