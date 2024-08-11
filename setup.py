@@ -4,7 +4,7 @@ setup(
     name='repo-map',
     version='0.0.3',
     py_modules=['repo_map_generator'],
-    python_requires='>=3.10',
+    python_requires='>=3.9',
     install_requires=[
         'networkx',
         'numpy',  # numpy is a missing dependency of networkx that prevents this repo from running standalone.
